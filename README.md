@@ -102,7 +102,6 @@ The analysis includes:
 - No sensitive data is stored permanently
 
 
-
 ## 📝 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
