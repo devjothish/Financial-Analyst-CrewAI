@@ -1,14 +1,91 @@
 import streamlit as st
 import pandas as pd
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from dotenv import load_dotenv
 from crewai import Agent, Crew, Task, Process, LLM
 from pydantic import BaseModel
 from tools.financial_tools import YFinanceStockTool
+import yfinance as yf
 
 
 load_dotenv()
+
+# Custom CSS for better styling
+st.set_page_config(
+    page_title="Financial Analyst AI",
+    page_icon="📈",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Custom CSS
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f5f5f5;
+    }
+    .stApp {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .sidebar .sidebar-content {
+        background-color: #ffffff;
+    }
+    .stButton>button {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    .stButton>button:hover {
+        background-color: #45a049;
+    }
+    .stTextInput>div>div>input {
+        border-radius: 5px;
+    }
+    .report-box {
+        background-color: #4CAF50;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header {
+        text-align: center;
+        padding: 20px 0;
+        background-color: #ffffff;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .header h1 {
+        color: #2c3e50;
+        margin: 0;
+    }
+            
+    .header p {
+        color: #7f8c8d;
+        margin: 10px 0 0 0;
+    }
+    
+    </style>
+    """, unsafe_allow_html=True)
+
+# Header
+st.markdown("""
+    <div class="header">
+        <h1>📈 Financial Analyst AI</h1>
+        <p>Developed using CrewAI and SambaNova Cloud</p>
+    </div>
+""", unsafe_allow_html=True)
 
 # Define Pydantic models for structured output
 class StockAnalysis(BaseModel):
@@ -163,18 +240,17 @@ def create_agents_and_tasks(symbol: str):
 
 #Streamlit Application UI
 
-st.set_page_config(page_title="Stock Market Analyst", page_icon=":chart_with_upwards_trend:", layout="wide")
-
-st.title("CrewAI - Multi-Agent Financial Analysis")
-
-#Sidebar
-
+# Sidebar
 with st.sidebar:
-    st.header("Configuration")
+    st.markdown("""
+        <div style='text-align: center; padding: 20px 0;'>
+            <h2>⚙️ Configuration</h2>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # API Key input
+    # API Key input with better styling
     api_key = st.text_input(
-        "SambaNova API Key",
+        "🔑 SambaNova API Key",
         type="password",
         value=os.getenv("SAMBANOVA_API_KEY", ""),
         help="Enter your SambaNova API key"
@@ -182,15 +258,19 @@ with st.sidebar:
     if api_key:
         os.environ["SAMBANOVA_API_KEY"] = api_key
 
-    # Stock Symbol input
+    st.markdown("---")
+
+    # Stock Symbol input with better styling
     symbol = st.text_input(
-        "Stock Symbol",
-        value="AAPL",
+        "📊 Stock Symbol",
+        value="",
         help="Enter a stock symbol (e.g., AAPL, GOOGL)"
     ).upper()
 
-    # Analysis button
-    analyze_button = st.button("Analyze Stock", type="primary")
+    st.markdown("---")
+
+    # Analysis button with better styling
+    analyze_button = st.button("🚀 Analyze Stock", type="primary")
 
 
 
@@ -212,10 +292,12 @@ def is_valid_stock_symbol(symbol: str) -> bool:
 
 if analyze_button:
     if not symbol:
-        st.error("Please enter a stock symbol")
+        st.error("⚠️ Please enter a stock symbol")
+    elif not is_valid_stock_symbol(symbol):
+        st.error(f"⚠️ Invalid stock symbol: {symbol}. Please enter a valid stock symbol.")
     else:
         try:
-            with st.spinner(f'Analyzing {symbol}... This may take a few minutes'):
+            with st.spinner(f'🔍 Analyzing {symbol}... This may take a few minutes'):
                 crew = create_agents_and_tasks(symbol)
                 result = crew.kickoff()
 
@@ -228,19 +310,30 @@ if analyze_button:
                 st.session_state.analysis_complete = True
 
         except Exception as e:
-            st.error(f"An error occurred: {str(e)}")
+            st.error(f"⚠️ An error occurred: {str(e)}")
 
 if st.session_state.analysis_complete and st.session_state.report:
-    st.markdown("### Analysis Report")
+    st.markdown("""
+        <div class="report-box">
+            <h1>📊 Analysis Report</h1>
+    """, unsafe_allow_html=True)
+    
+    # Display report without any formatting
     st.markdown(st.session_state.report)
+    
+    st.markdown("</div>", unsafe_allow_html=True)
 
-        #Download Button
+    # Download Button
     st.download_button(
-        label="Download Report",
+        label="📥 Download Report",
         data=st.session_state.report,
         file_name=f"stock_analysis_{symbol}_{datetime.now().strftime('%Y%m%d')}.md",
         mime="text/markdown"
     )
 
 # Footer
-st.markdown("---") 
+st.markdown("""
+    <div style='text-align: center; padding: 20px 0; color: #7f8c8d;'>
+        <p>© 2025 Financial Analyst AI. All rights reserved by Jo's Cloud AI Hub</p>
+    </div>
+""", unsafe_allow_html=True) 
