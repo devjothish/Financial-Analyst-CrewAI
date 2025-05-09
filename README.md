@@ -65,7 +65,7 @@ A powerful AI-powered stock market analysis tool that uses CrewAI to provide com
 
 4. Wait for the analysis to complete (this may take a few minutes)
 
-5. View the generated report and download it if desired
+5. View the generated report and download it if desired to your local machine
 
 ## 🤖 AI Agents
 
