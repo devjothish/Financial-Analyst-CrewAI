@@ -11,6 +11,8 @@ A powerful AI-powered stock market analysis tool that uses CrewAI to provide com
 - **Stock Symbol Validation**: Ensures accurate stock symbol input
 - **Report Download**: Export analysis reports in markdown format
 
+##Demo - https://www.linkedin.com/feed/update/urn:li:activity:7325661424981045249/
+
 ## 🛠️ Technologies Used
 
 - **CrewAI**: For orchestrating AI agents and tasks
